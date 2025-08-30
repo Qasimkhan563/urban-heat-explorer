@@ -18,6 +18,10 @@ venv/
 env/
 ENV/
 
+# --- App cache ---
+cache/
+
+
 # --- OS-specific ---
 .DS_Store
 Thumbs.db
