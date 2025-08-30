@@ -183,9 +183,10 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
         - **Urban Heat Island (UHI):** Local warming effect caused by dense urban structures.  
         - **NDVI (Normalized Difference Vegetation Index):** Derived from Sentinel-2 imagery, range -1 to +1.  
         Formula:  
-        \[
+        $$
         NDVI = \frac{(B8 - B4)}{(B8 + B4)}
-        \]  
+        $$
+
         - **DEM (Digital Elevation Model):** Terrain height raster, used to calculate slope.  
         - **Building footprints:** Vector data of urban structures, rasterized for analysis.  
         - **Baseline Heat Index (HI):** Combines built-up density, vegetation, and slope:  
