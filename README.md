@@ -16,9 +16,9 @@ The app integrates **Google Earth Engine (EE)**, **OpenStreetMap (OSM)**, and **
 - ✅ Upload custom datasets (AOI, DEM, NDVI, Buildings)  
 - ✅ Auto-fetch new cities (via OSM + EE)  
 - ✅ Compute **baseline heat index**:  
-  \[
+  $$
   HI = B - NDVI + (S \times 0.2)
-  \]  
+  $$  
 - ✅ Simulate greening scenarios (trees, roofs, parks)  
 - ✅ Interactive maps with layer toggles & legends  
 - ✅ Export metrics, maps, and reports (CSV / PDF / GeoTIFF)  
