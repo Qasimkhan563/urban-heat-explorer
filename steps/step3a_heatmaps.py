@@ -107,22 +107,14 @@ def run_step(BASE_DIR):
             ) as dst:
                 dst.write(arr.astype("float32"), 1)
         
-            # Use rio-tiler instead of localtileserver
-            from rio_tiler.io import Reader
-        
-            with Reader(tmpfile.name) as reader:
-                minx, miny, maxx, maxy = reader.bounds
-                bounds = [[miny, minx], [maxy, maxx]]
-        
-            # Add raster to map
-            m.add_cog_layer(
+            m.add_raster(
                 tmpfile.name,
-                colormap=cmap,  # keep your selected colormap
+                colormap=cmap,
                 layer_name=f"{city} – {sc}",
                 opacity=opacity,
                 vmin=0, vmax=1
             )
-        
+            
             # Save for PDF later
             st.session_state["heatmap_figs"].append((f"{city} – {sc}", tmpfile.name))
 
