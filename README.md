@@ -12,7 +12,7 @@ to mitigate urban heat islands. It supports:
 
 ## 🚀 Run Locally
 ```bash
-git clone https://github.com/YOUR_USERNAME/urban-heat-mitigation-app.git
+git clone https://github.com/Qasimkhan563/urban-heat-mitigation-app.git
 cd urban-heat-mitigation-app
 pip install -r requirements.txt
 streamlit run app.py
