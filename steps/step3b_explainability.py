@@ -5,11 +5,22 @@ import plotly.graph_objects as go
 from utils import process_city, load_raster, compute_heat_index, high_heat_area
 import rasterio
 import tempfile
-import geemap.foliumap as geemap
-import folium
-import branca.colormap as cm
 import matplotlib.pyplot as plt
-import streamlit.components.v1 as components
+import pydeck as pdk
+import pyproj
+from shapely.geometry import box
+from shapely.ops import transform as shp_transform
+
+
+def get_latlon_bounds(src):
+    """Convert raster bounds to EPSG:4326 (lat/lon)."""
+    proj_src = pyproj.CRS(src.crs)
+    proj_dst = pyproj.CRS("EPSG:4326")
+    project = pyproj.Transformer.from_crs(proj_src, proj_dst, always_xy=True).transform
+    bbox = box(src.bounds.left, src.bounds.bottom, src.bounds.right, src.bounds.top)
+    bbox_latlon = shp_transform(project, bbox)
+    minx, miny, maxx, maxy = bbox_latlon.bounds
+    return [[miny, minx], [maxy, maxx]]  # [[south, west], [north, east]]
 
 
 def run_step(BASE_DIR):
@@ -22,8 +33,6 @@ def run_step(BASE_DIR):
         - 🏙 **Explainability (XAI)** → shows why hotspots exist (dense buildings, low greenery, or slope effects).  
         - ⏳ **Digital Twin Simulation** → projects changes in heat area over 20 years under greening interventions.  
         - 🗺 **Interactive map comparison** → baseline, 5, 10, 15, 20 years + difference map.  
-
-        🔑 This step builds **trust and foresight**: you see both the *causes* of heat and the *long-term impact* of greening.
         """)
 
     canopy_increase = st.session_state["canopy_increase"]
@@ -76,14 +85,20 @@ def run_step(BASE_DIR):
             heat_sim = compute_heat_index(ndvi_sim, built_raster, slope_norm)
             temporal_results[city]["heat_area"].append(high_heat_area(heat_sim))
 
-            # Save snapshots for multiple years
+            # Save snapshots
             if year in [5, 10, 15, 20]:
                 temporal_results[city][f"heatmap_year{year}"] = heat_sim
         temporal_results[city]["heatmap_baseline"] = heat_baseline
 
-        # --- Interactive comparison Baseline vs Snapshots ---
+        # --- Interactive map with pydeck ---
         if st.checkbox(f"🌍 Show Interactive Baseline + Future Snapshots – {city}"):
-            # Controls stacked vertically
+            baseline_path = os.path.join(city_dir, "heat_index.tif")
+            with rasterio.open(baseline_path) as src:
+                bounds_latlon = get_latlon_bounds(src)
+
+            center_lat = (bounds_latlon[0][0] + bounds_latlon[1][0]) / 2
+            center_lon = (bounds_latlon[0][1] + bounds_latlon[1][1]) / 2
+
             cmap = st.selectbox(
                 f"🎨 Choose Color Ramp for {city}",
                 ["inferno", "viridis", "plasma", "magma", "cividis"],
@@ -91,64 +106,62 @@ def run_step(BASE_DIR):
             )
             opacity = st.slider(f"🔎 Raster Opacity for {city}", 0.1, 1.0, 0.7, step=0.05, key=f"opacity_{city}")
 
-            baseline_path = os.path.join(city_dir, "heat_index.tif")
-            with rasterio.open(baseline_path) as src:
-                bounds = src.bounds
-                crs = src.crs
-                transform = src.transform
-
-            m = geemap.Map(center=[(bounds.top+bounds.bottom)/2, (bounds.left+bounds.right)/2], zoom=12)
-
-            # Add all snapshots
+            # Snapshots to display
             scenario_maps = {
                 "Baseline": temporal_results[city]["heatmap_baseline"],
                 "Year 5": temporal_results[city]["heatmap_year5"],
                 "Year 10": temporal_results[city]["heatmap_year10"],
                 "Year 15": temporal_results[city]["heatmap_year15"],
                 "Year 20": temporal_results[city]["heatmap_year20"],
+                "Cooling Effect (20y - Baseline)": temporal_results[city]["heatmap_year20"] - temporal_results[city]["heatmap_baseline"],
             }
 
-            # Add each snapshot with consistent scale
-            for sc, arr in scenario_maps.items():
-                tmpfile = tempfile.NamedTemporaryFile(delete=False, suffix=".tif")
-                with rasterio.open(
-                    tmpfile.name, "w",
-                    driver="GTiff", height=arr.shape[0], width=arr.shape[1],
-                    count=1, dtype="float32", crs=crs, transform=transform
-                ) as dst:
-                    dst.write(arr.astype("float32"), 1)
-
-                m.add_raster(tmpfile.name, colormap=cmap, layer_name=f"{city} – {sc}", opacity=opacity, vmin=0, vmax=1)
-
-            # Add difference map (Year 20 - Baseline)
-            diff = temporal_results[city]["heatmap_year20"] - temporal_results[city]["heatmap_baseline"]
-            tmpfile = tempfile.NamedTemporaryFile(delete=False, suffix=".tif")
-            with rasterio.open(
-                tmpfile.name, "w",
-                driver="GTiff", height=diff.shape[0], width=diff.shape[1],
-                count=1, dtype="float32", crs=crs, transform=transform
-            ) as dst:
-                dst.write(diff.astype("float32"), 1)
-
-            m.add_raster(tmpfile.name, colormap=cmap, layer_name=f"{city} – Cooling Effect (20y - Baseline)", opacity=0.7, vmin=-0.5, vmax=0.5)
-
-            # Basemap and controls
-            m.add_basemap("CartoVoyager")
-            m.add_child(folium.LayerControl())
-
-            # Show map
-            m.to_streamlit(width=800, height=600)
-
-            # --- Legend below the map ---
-            colormap = cm.LinearColormap(
-                colors=[plt.get_cmap(cmap)(i) for i in np.linspace(0, 1, 256)],
-                vmin=0, vmax=1
+            selected_layers = st.multiselect(
+                f"👀 Toggle layers for {city}",
+                options=list(scenario_maps.keys()),
+                default=list(scenario_maps.keys())
             )
-            colormap.caption = "Heat Index (0 = cool, 1 = hot)"
-            legend_html = colormap._repr_html_()
-            components.html(legend_html, height=100)
 
-    # --- Time series chart ---
+            layers = []
+            for sc, arr in scenario_maps.items():
+                if sc not in selected_layers:
+                    continue
+
+                if np.nanmax(arr) > np.nanmin(arr):
+                    normed = (arr - np.nanmin(arr)) / (np.nanmax(arr) - np.nanmin(arr))
+                else:
+                    normed = np.zeros_like(arr)
+
+                tmp_png = os.path.join(tempfile.gettempdir(), f"{city}_{sc}.png")
+                plt.imsave(tmp_png, normed, cmap=cmap)
+
+                image_bounds = [
+                    bounds_latlon[0][1],  # west
+                    bounds_latlon[0][0],  # south
+                    bounds_latlon[1][1],  # east
+                    bounds_latlon[1][0],  # north
+                ]
+
+                layer = pdk.Layer(
+                    "BitmapLayer",
+                    data=None,
+                    image=tmp_png,
+                    bounds=image_bounds,
+                    opacity=opacity,
+                    pickable=False,
+                    id=f"{city}_{sc}",
+                )
+                layers.append(layer)
+
+            view_state = pdk.ViewState(latitude=center_lat, longitude=center_lon, zoom=12)
+            deck = pdk.Deck(
+                layers=layers,
+                initial_view_state=view_state,
+                map_style=None,  # OSM background
+            )
+            st.pydeck_chart(deck)
+
+        # --- Time series chart ---
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=years, y=temporal_results[city]["heat_area"],
                                  mode="lines+markers", name=city, line=dict(color="blue")))
