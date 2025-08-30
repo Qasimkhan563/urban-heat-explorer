@@ -13,7 +13,8 @@ import uuid
 import os
 import rasterio
 
-BASE_DIR = r"C:\Users\hp\Downloads\app2"
+BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "cities")
+BASE_DIR = os.path.abspath(BASE_DIR)
 
 def get_city_center(city):
     """Return lat/lon center of the city's raster extent"""
@@ -132,13 +133,18 @@ def run_step():
                  for f, cat in zip(st.session_state["classified_features"], categories)],
                 crs="EPSG:4326"
             )
-
-            save_path = "stakeholder_inputs.geojson"
+        
+            # --- Save stakeholder inputs to data/stakeholder_inputs/ ---
+            save_dir = os.path.join(os.path.dirname(__file__), "..", "data", "stakeholder_inputs")
+            os.makedirs(save_dir, exist_ok=True)
+            save_path = os.path.join(save_dir, "stakeholder_inputs.geojson")
+        
             if os.path.exists(save_path):
                 existing = gpd.read_file(save_path)
                 gdf = pd.concat([existing, gdf], ignore_index=True)
+        
             gdf.to_file(save_path, driver="GeoJSON")
-
+        
             st.success("✅ Your interventions have been saved!")
 
             # --------------------
