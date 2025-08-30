@@ -29,14 +29,6 @@ def safe_ee_to_numpy(img, region, scale):
     asyncio.set_event_loop(loop)
     return geemap.ee_to_numpy(img, region=region, scale=scale)
 
-# Initialize Earth Engine once at import
-try:
-    ee.Initialize()
-except Exception:
-    ee.Authenticate()
-    ee.Initialize()
-
-
 # ==============================
 # Step UI
 # ==============================
@@ -186,7 +178,7 @@ def preprocess_auto_city(city_query, BASE_DIR=None):
         width = int(width / scale_factor)
         height = int(height / scale_factor)
 
-    transform = from_origin(xmin, ymax, 10, 10))
+    transform = from_origin(xmin, ymax, 10, 10)
 
 
     # NDVI
