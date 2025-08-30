@@ -5,17 +5,7 @@ init_ee()
 
 # Make layout wide
 st.set_page_config(layout="wide")
-from steps import (
-    step0_select_city,
-    step1_parameters,
-    step2_costs,
-    step3a_heatmaps,
-    step3b_explainability,
-    step3c_costs,
-    step3d_policy_game,
-    step4_feedback,
-    step5_results_export
-)
+from steps import step0_select_city, step1_parameters, step2_costs, step3a_heatmaps, step3b_explainability, step3c_costs, step3d_policy_game, step4_feedback, step5_results_export
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), "data")
 CITIES_FILE = os.path.join(os.path.dirname(__file__), "available_cities.json")
