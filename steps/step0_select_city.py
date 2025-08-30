@@ -30,7 +30,7 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
         In this step, you have **three options** to begin the workflow:
 
         1. ✅ **Select a Pre-processed City**  
-           Choose from built-in datasets (Lisbon, Zurich, Münster, Athens, Karlsruhe).  
+           Choose from built-in datasets ("Lisbon", "Zurich", "Munster", "Podgorica Montenegro", "Tirana", "Karlsruhe", "Copenhagen", "Seville Spain").  
 
         2. 📂 **Upload Your Own Data**  
            Provide four layers:  
