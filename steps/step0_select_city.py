@@ -114,7 +114,6 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
         if st.button("🔎 Auto Process City"):
             if city_query:
                 try:
-                    ee.Initialize()
                     city_gdf = ox.geocode_to_gdf(city_query).to_crs(4326)
                     if city_gdf.empty:
                         st.error("❌ City not found. Try a different spelling or include country name.")
@@ -299,4 +298,3 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
         This step ensures transparency and reproducibility.  
         It also allows the tool to be applied anywhere in the world, not just in predefined cities.
         """)
-

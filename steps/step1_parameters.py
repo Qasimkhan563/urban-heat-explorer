@@ -26,17 +26,6 @@ def run_step():
         - **Roofs** → raises NDVI on **flat rooftops (low slope, built-up areas)**.  
         - **Parks** → raises NDVI on **vacant/under-vegetated land**.  
 
-        These updated NDVI rasters are plugged into the **Heat Index formula**:
-
-        \[
-        HI=B−(NDVI+Increase)+(S×0.2)
-        \]
-
-        where:  
-        - \(B\) = Built-up density (1 = building, 0 = no building)  
-        - \(NDVI\) = Vegetation cover (0–1 normalized)  
-        - \(S\) = Slope (0–1 normalized)  
-
         🔑 Interpretation: Higher NDVI reduces the heat index, meaning **cooler areas**.
         """)
 
