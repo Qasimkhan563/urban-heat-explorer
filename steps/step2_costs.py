@@ -101,7 +101,7 @@ def run_step():
 # ==============================
 def preprocess_custom_data(BASE_DIR=None):
     if BASE_DIR is None:
-        BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "cities")
+        BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
     city_name = st.session_state.get("custom_city_name", "Custom_AOI").replace(" ", "_")
     city_dir = os.path.join(BASE_DIR, city_name)
@@ -172,7 +172,7 @@ def get_city_aoi(city_query):
 # ==============================
 def preprocess_auto_city(city_query, BASE_DIR=None):
     if BASE_DIR is None:
-        BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "cities")
+        BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
     aoi, aoi_m = get_city_aoi(city_query)
     xmin, ymin, xmax, ymax = aoi_m.bounds
     width, height = int((xmax - xmin) / 10), int((ymax - ymin) / 10)
