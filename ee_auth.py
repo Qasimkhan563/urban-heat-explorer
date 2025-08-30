@@ -1,20 +1,16 @@
-import ee
+# ee_auth.py
 import streamlit as st
-import json
-import os
+import ee
 
 def init_ee():
-    if "ee_initialized" in st.session_state:
-        return
+    """Initialize Google Earth Engine with Streamlit secrets."""
     try:
-        # Load full JSON from Streamlit secrets
-        key_json = st.secrets["gcp_service_account"]  # name your section like [gcp_service_account] in secrets.toml
-        service_account = key_json["client_email"]
+        # Load from .streamlit/secrets.toml
+        service_account = st.secrets["gcp_service_account"]["client_email"]
+        private_key = st.secrets["gcp_service_account"]["private_key"]
 
-        # Convert to proper credentials
-        credentials = ee.ServiceAccountCredentials(service_account, key_data=json.dumps(key_json))
+        credentials = ee.ServiceAccountCredentials(service_account, key_data=private_key)
         ee.Initialize(credentials)
-        st.session_state["ee_initialized"] = True
-        st.success("✅ Earth Engine initialized.")
+        st.success("✅ Earth Engine initialized successfully with service account.")
     except Exception as e:
-        st.error(f"❌ Failed to initialize Earth Engine: {e}")
+        st.error(f"⚠️ Failed to initialize Earth Engine: {e}")
