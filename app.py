@@ -1,5 +1,7 @@
 import streamlit as st
 import os, json
+from ee_auth import init_ee
+init_ee()
 
 # Make layout wide
 st.set_page_config(layout="wide")
