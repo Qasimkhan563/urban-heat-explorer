@@ -17,6 +17,8 @@ import osmnx as ox
 import pyproj
 from shapely.ops import transform as shp_transform
 from shapely.geometry import shape, mapping
+from ee_auth import init_ee
+init_ee()
 
 
 def run_step(BASE_DIR, AVAILABLE_CITIES):
