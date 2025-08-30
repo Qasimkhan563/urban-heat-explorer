@@ -107,9 +107,18 @@ def run_step(BASE_DIR):
             ) as dst:
                 dst.write(arr.astype("float32"), 1)
 
-            m.add_raster(
+            from rio_tiler.io import Reader
+            from rio_tiler.colormap import cmap as rio_cmap
+            
+            with Reader(tmpfile.name) as reader:
+                # Get bounds for folium
+                bounds = [[reader.bounds.bottom, reader.bounds.left],
+                          [reader.bounds.top, reader.bounds.right]]
+            
+            # Use geemap’s add_cog_layer instead of add_raster
+            m.add_cog_layer(
                 tmpfile.name,
-                colormap=cmap,
+                colormap=cmap,        # your chosen cmap
                 layer_name=f"{city} – {sc}",
                 opacity=opacity,
                 vmin=0, vmax=1
