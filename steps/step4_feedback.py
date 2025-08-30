@@ -5,6 +5,7 @@ import geopandas as gpd
 from shapely.geometry import shape
 import os
 import pandas as pd
+import rasterio
 import uuid
 from datetime import datetime
 
@@ -33,7 +34,30 @@ def run_step():
         st.session_state["user_id"] = str(uuid.uuid4())  # random unique ID
 
     # Base map
-    m = folium.Map(location=[49.0069, 8.4037], zoom_start=12)
+    # Center map on last selected city
+    if st.session_state.get("selected_cities"):
+        city = st.session_state["selected_cities"][-1]  # last processed city
+        
+        # ✅ Reuse centroid from Step 4A if available
+        if "city_centroids" in st.session_state and city in st.session_state["city_centroids"]:
+            center_lat, center_lon = st.session_state["city_centroids"][city]
+        else:
+            # fallback: try computing from raster
+            city_dir = os.path.join(os.path.dirname(__file__), "..", "data", city)
+            heatmap_path = os.path.join(city_dir, "heat_index.tif")
+            if os.path.exists(heatmap_path):
+                with rasterio.open(heatmap_path) as src:
+                    bounds = src.bounds
+                    center_lat = (bounds.top + bounds.bottom) / 2
+                    center_lon = (bounds.left + bounds.right) / 2
+            else:
+                center_lat, center_lon = 49.0069, 8.4037  # fallback Karlsruhe
+    else:
+        center_lat, center_lon = 49.0069, 8.4037
+
+    m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
+
+
     folium.plugins.Draw(
         export=True,
         draw_options={'polygon': True, 'marker': True, 'circle': False, 'polyline': False},
