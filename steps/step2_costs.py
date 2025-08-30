@@ -99,7 +99,10 @@ def run_step():
 # ==============================
 # Preprocess (Upload path)
 # ==============================
-def preprocess_custom_data(BASE_DIR="C:/Users/hp/Downloads/app2"):
+def preprocess_custom_data(BASE_DIR=None):
+    if BASE_DIR is None:
+        BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "cities")
+
     city_name = st.session_state.get("custom_city_name", "Custom_AOI").replace(" ", "_")
     city_dir = os.path.join(BASE_DIR, city_name)
     os.makedirs(city_dir, exist_ok=True)
@@ -167,7 +170,9 @@ def get_city_aoi(city_query):
 # ==============================
 # Preprocess (Auto EE+OSM path)
 # ==============================
-def preprocess_auto_city(city_query, BASE_DIR="C:/Users/hp/Downloads/app2"):
+def preprocess_auto_city(city_query, BASE_DIR=None):
+    if BASE_DIR is None:
+        BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "cities")
     aoi, aoi_m = get_city_aoi(city_query)
     xmin, ymin, xmax, ymax = aoi_m.bounds
     width, height = int((xmax - xmin) / 10), int((ymax - ymin) / 10)
@@ -179,7 +184,8 @@ def preprocess_auto_city(city_query, BASE_DIR="C:/Users/hp/Downloads/app2"):
         width = int(width / scale_factor)
         height = int(height / scale_factor)
 
-    transform = from_origin(xmin, ymax, 10, 10)
+    transform = from_origin(xmin, ymax, 10, 10))
+
 
     # NDVI
     s2 = (ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
@@ -215,18 +221,27 @@ def preprocess_auto_city(city_query, BASE_DIR="C:/Users/hp/Downloads/app2"):
     heat_index = built_norm - ndvi_norm + slope_norm * 0.2
     heat_index = (heat_index - heat_index.min()) / (heat_index.max() - heat_index.min())
 
-    # Save
+    # Save inside data/cities/city_name
     city_name = city_query.replace(" ", "_")
     city_dir = os.path.join(BASE_DIR, city_name)
     os.makedirs(city_dir, exist_ok=True)
 
-    profile = {"driver": "GTiff", "height": ndvi_norm.shape[0], "width": ndvi_norm.shape[1],
-               "count": 1, "dtype": "float32", "crs": "EPSG:3857", "transform": transform}
+    profile = {
+        "driver": "GTiff",
+        "height": ndvi_norm.shape[0],
+        "width": ndvi_norm.shape[1],
+        "count": 1,
+        "dtype": "float32",
+        "crs": "EPSG:3857",
+        "transform": transform,
+    }
 
-    for name, arr, dtype in [("ndvi_norm", ndvi_norm, "float32"),
-                             ("slope", slope_norm, "float32"),
-                             ("buildings", buildings_raster, "uint8"),
-                             ("heat_index", heat_index, "float32")]:
+    for name, arr, dtype in [
+        ("ndvi_norm", ndvi_norm, "float32"),
+        ("slope", slope_norm, "float32"),
+        ("buildings", buildings_raster, "uint8"),
+        ("heat_index", heat_index, "float32"),
+    ]:
         with rasterio.open(os.path.join(city_dir, f"{name}.tif"), "w", **profile) as dst:
             dst.write(arr.astype(dtype), 1)
 
@@ -236,10 +251,10 @@ def preprocess_auto_city(city_query, BASE_DIR="C:/Users/hp/Downloads/app2"):
 
     st.success(f"✅ Auto preprocessing complete for {city_query}. Data saved in {city_dir}")
 
-
-    # 🔹 Add processed city to list and persist
+    # 🔹 Update available_cities.json inside repo
     import json
+    cities_file = os.path.join(os.path.dirname(__file__), "..", "available_cities.json")
     if city_name not in st.session_state["available_cities"]:
         st.session_state["available_cities"].append(city_name)
-        with open(os.path.join(BASE_DIR, "available_cities.json"), "w") as f:
+        with open(cities_file, "w") as f:
             json.dump(st.session_state["available_cities"], f)
