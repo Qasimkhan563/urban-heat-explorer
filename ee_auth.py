@@ -15,6 +15,6 @@ def init_ee():
         ee.Initialize(credentials)
 
         st.session_state["ee_initialized"] = True
-        st.success("✅ Earth Engine initialized.")
+
     except Exception as e:
         st.error(f"❌ Failed to initialize Earth Engine: {e}")
