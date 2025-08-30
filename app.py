@@ -1,5 +1,4 @@
 import streamlit as st
-st.set_option("server.fileWatcherType", "none")
 import os, json
 from ee_auth import init_ee
 init_ee()
