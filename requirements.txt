@@ -8,6 +8,7 @@ scipy
 scikit-image
 matplotlib
 pandas
+localtileserver
 numpy
 earthengine-api
 geemap
