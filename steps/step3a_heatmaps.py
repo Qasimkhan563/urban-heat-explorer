@@ -62,6 +62,11 @@ def run_step(BASE_DIR):
         center_lat = (bounds_latlon[0][0] + bounds_latlon[1][0]) / 2
         center_lon = (bounds_latlon[0][1] + bounds_latlon[1][1]) / 2
 
+        # Save centroid for reuse in later steps
+        if "city_centroids" not in st.session_state:
+            st.session_state["city_centroids"] = {}
+        st.session_state["city_centroids"][city] = (center_lat, center_lon)
+
         # User controls
         cmap = st.selectbox(
             f"🎨 Choose Color Ramp for {city}",
