@@ -149,8 +149,8 @@ def export_pdf_report(include_abs, include_pct, include_carbon, include_sdg, inc
     # -----------------------------
     # Figures
     # -----------------------------
-    if include_figs and "prepared_heatmaps" in st.session_state:
-        for title, path in st.session_state["prepared_heatmaps"]:
+    if include_figs and "heatmap_figs" in st.session_state:
+        for title, path in st.session_state["heatmap_figs"]:
             pdf.add_page()
             pdf.set_font("DejaVu", "B", 14)
             pdf.cell(0, 10, title, ln=True)
