@@ -1,0 +1,52 @@
+# --- Python cache ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# --- Jupyter/Streamlit cache ---
+.ipynb_checkpoints/
+.streamlit/secrets.toml
+.streamlit/cache/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- OS-specific ---
+.DS_Store
+Thumbs.db
+
+# --- Raster/Geo files (keep only small demo data) ---
+*.aux.xml
+*.ovr
+*.aux
+*.xml
+*.idx
+*.dbf
+*.shx
+*.prj
+*.cpg
+*.lock
+*.gpkg-wal
+*.gpkg-shm
+
+# Large raster outputs (do not upload full Sentinel-2 tiles!)
+*.tif
+*.tiff
+*.img
+*.jp2
+
+# --- Reports ---
+*.pdf
+*.docx
+
+# --- Temporary files ---
+*.tmp
+*.bak
+*.swp
+*.swo
