@@ -140,11 +140,17 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
 
     if use_auto:
         city_query = st.text_input("Enter a city/district name (e.g., Podgorica, Montenegro)").strip()
-        if st.button("🔎 Auto Process City"):
-            if city_query:
-                try:
-                    ee.Initialize()
-                    city_gdf = ox.geocode_to_gdf(city_query).to_crs(4326)
+        if use_auto:
+            city_query = st.text_input("Enter a city/district name (e.g., Podgorica, Montenegro)").strip()
+            if st.button("🔎 Auto Process City"):
+                if city_query:
+                    try:
+                        # Make sure EE is initialized via service account
+                        from ee_auth import init_ee
+                        init_ee()
+        
+                        city_gdf = ox.geocode_to_gdf(city_query).to_crs(4326)
+
                     if city_gdf.empty:
                         st.error("❌ City not found. Try a different spelling or include country name.")
                     else:
