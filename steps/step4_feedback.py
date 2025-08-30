@@ -86,22 +86,27 @@ def run_step():
             submitted = st.form_submit_button("Submit ✅")
 
             if submitted:
-                save_path = "stakeholder_inputs.geojson"
+                # --- Ensure save directory exists ---
+                save_dir = os.path.join(os.path.dirname(__file__), "..", "data", "stakeholder_inputs")
+                os.makedirs(save_dir, exist_ok=True)
+                save_path = os.path.join(save_dir, "stakeholder_inputs.geojson")
+            
                 if os.path.exists(save_path):
                     existing = gpd.read_file(save_path)
                     gdf = pd.concat([existing, gdf], ignore_index=True)
-
+            
                 # Add metadata
                 gdf["name"] = name
                 gdf["profession"] = profession
                 gdf["company"] = company
                 gdf["nationality"] = nationality
-
+            
                 gdf["timestamp"] = gdf["timestamp"].astype(str)  # ensure JSON serializable
                 gdf.to_file(save_path, driver="GeoJSON")
-
+            
                 st.success("✅ Your inputs and details have been saved for research and policy analysis.")
                 st.session_state["show_metadata_form"] = False
+
 
     # -----------------------
     # Navigation
