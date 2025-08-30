@@ -15,6 +15,8 @@ from shapely.ops import transform as shp_transform
 from shapely.geometry import shape, mapping
 import asyncio
 import nest_asyncio
+from ee_auth import init_ee
+init_ee()
 
 # Patch async issues for Streamlit
 nest_asyncio.apply()
