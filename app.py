@@ -15,7 +15,7 @@ from steps import (
     step5_results_export
 )
 
-BASE_DIR = os.path.join(os.path.dirname(__file__), "data", "cities")
+BASE_DIR = os.path.join(os.path.dirname(__file__), "data")
 CITIES_FILE = os.path.join(os.path.dirname(__file__), "available_cities.json")
 
 # --- Initialize session state ---
