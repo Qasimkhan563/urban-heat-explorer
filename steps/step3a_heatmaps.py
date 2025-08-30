@@ -106,26 +106,26 @@ def run_step(BASE_DIR):
                 transform=transform
             ) as dst:
                 dst.write(arr.astype("float32"), 1)
-
+        
+            # Use rio-tiler instead of localtileserver
             from rio_tiler.io import Reader
-            from rio_tiler.colormap import cmap as rio_cmap
-            
+        
             with Reader(tmpfile.name) as reader:
-                # Get bounds for folium
-                bounds = [[reader.bounds.bottom, reader.bounds.left],
-                          [reader.bounds.top, reader.bounds.right]]
-            
-            # Use geemap’s add_cog_layer instead of add_raster
+                minx, miny, maxx, maxy = reader.bounds
+                bounds = [[miny, minx], [maxy, maxx]]
+        
+            # Add raster to map
             m.add_cog_layer(
                 tmpfile.name,
-                colormap=cmap,        # your chosen cmap
+                colormap=cmap,  # keep your selected colormap
                 layer_name=f"{city} – {sc}",
                 opacity=opacity,
                 vmin=0, vmax=1
             )
-
+        
             # Save for PDF later
             st.session_state["heatmap_figs"].append((f"{city} – {sc}", tmpfile.name))
+
 
         # Add basemap + layer control
         m.add_basemap("CartoVoyager")
