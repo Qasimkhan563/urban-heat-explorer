@@ -24,25 +24,20 @@ init_ee()
 def run_step(BASE_DIR, AVAILABLE_CITIES):
     st.header("Step 1: Select a City or Upload Custom Data")
 
-    # --- Short Help (top) ---
+    # --- Help Section ---
+    city_list_str = ", ".join(AVAILABLE_CITIES)
     with st.expander("ℹ️ Help: About This Step"):
-        st.markdown("""
+        st.markdown(f"""
         In this step, you have **three options** to begin the workflow:
 
         1. ✅ **Select a Pre-processed City**  
-           Choose from built-in datasets (Lisbon, Zurich, Munster, Podgorica Montenegro, Tirana, Karlsruhe, Copenhagen, Seville Spain).  
+           Choose from built-in datasets ({city_list_str}).  
 
         2. 📂 **Upload Your Own Data**  
-           Provide four layers:  
-           - Study Area (polygon GeoJSON / GPKG)  
-           - DEM (GeoTIFF, 10–90 m)  
-           - NDVI (GeoTIFF, Sentinel-2, June–Aug median recommended)  
-           - Buildings (GeoJSON / GPKG footprints)  
+           Provide four layers: Study Area, DEM, NDVI, and Building footprints.  
 
         3. 🌍 **Enter a City Name** *(experimental)*  
-           Type in any city name. The app will try to fetch NDVI (from Sentinel-2 via Earth Engine)  
-           and buildings (from OpenStreetMap) automatically.  
-           ⚠️ Requires internet & EE/OSM availability.  
+           Auto-fetch NDVI (Sentinel-2) and buildings (OSM).  
 
         ---
         👉 If you’re new, start with a **pre-processed city**.  

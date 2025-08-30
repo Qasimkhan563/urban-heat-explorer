@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "stakeholder_inputs",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "category": "🏞 Park", "user_id": "2baf489f-0035-4bea-b486-9c255974c416", "timestamp": "2025-08-30 23:40:00.729000", "name": "", "profession": "", "company": "", "nationality": "" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 19.793072, 41.322943 ], [ 19.793072, 41.342149 ], [ 19.830322, 41.342149 ], [ 19.830322, 41.322943 ], [ 19.793072, 41.322943 ] ] ] } },
+{ "type": "Feature", "properties": { "category": "🌳 Trees", "user_id": "e2d4b134-6ccd-477b-8a25-4e7dddaea401", "timestamp": "2025-08-30T23:42:02.619229", "name": "", "profession": "", "company": "", "nationality": "" }, "geometry": { "type": "Point", "coordinates": [ 19.818939, 41.329669 ] } },
+{ "type": "Feature", "properties": { "category": "🌳 Trees", "user_id": "e2d4b134-6ccd-477b-8a25-4e7dddaea401", "timestamp": "2025-08-30T23:42:02.619229", "name": "", "profession": "", "company": "", "nationality": "" }, "geometry": { "type": "Point", "coordinates": [ 19.818617, 41.329598 ] } },
+{ "type": "Feature", "properties": { "category": "🌳 Trees", "user_id": "e2d4b134-6ccd-477b-8a25-4e7dddaea401", "timestamp": "2025-08-30T23:42:02.619229", "name": "", "profession": "", "company": "", "nationality": "" }, "geometry": { "type": "Point", "coordinates": [ 19.818344, 41.329562 ] } }
+]
+}

@@ -155,8 +155,6 @@ def run_step(BASE_DIR):
             reduction = (baseline - value) / baseline * 100 if baseline > 0 else 0
             st.write(f"- {scenario}: {value:.2f} km² ({reduction:.1f}% reduction)")
 
-    st.success("✅ Heatmaps prepared for final export (stored in session).")
-
     # Navigation
     col1, col2 = st.columns([1,1])
     with col1:
