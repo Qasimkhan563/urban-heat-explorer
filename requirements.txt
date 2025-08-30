@@ -16,6 +16,7 @@ localtileserver
 xarray
 plotly
 fpdf2
+psutil
 folium
 tqdm
 streamlit-folium
