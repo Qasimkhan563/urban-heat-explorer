@@ -27,56 +27,26 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
     # --- Short Help (top) ---
     with st.expander("ℹ️ Help: About This Step"):
         st.markdown("""
-        In this step, you can either:  
-        - ✅ Select one of the **pre-processed cities** (Lisbon, Zurich, Münster, Athens, Karlsruhe), OR  
-        - 📂 Upload your **own dataset** (Study Area + DEM + NDVI + Buildings).  
+        In this step, you have **three options** to begin the workflow:
+
+        1. ✅ **Select a Pre-processed City**  
+           Choose from built-in datasets (Lisbon, Zurich, Münster, Athens, Karlsruhe).  
+
+        2. 📂 **Upload Your Own Data**  
+           Provide four layers:  
+           - Study Area (polygon GeoJSON / GPKG)  
+           - DEM (GeoTIFF, 10–90 m)  
+           - NDVI (GeoTIFF, Sentinel-2, June–Aug median recommended)  
+           - Buildings (GeoJSON / GPKG footprints)  
+
+        3. 🌍 **Enter a City Name** *(experimental)*  
+           Type in any city name. The app will try to fetch NDVI (from Sentinel-2 via Earth Engine)  
+           and buildings (from OpenStreetMap) automatically.  
+           ⚠️ Requires internet & EE/OSM availability.  
 
         ---
-
-        ### 📑 Dataset Requirements (if uploading your own)
-        You must provide **all four layers**:  
-        1. **Study Area (AOI)** → GeoJSON / GPKG polygon (your boundary).  
-        2. **DEM (Digital Elevation Model)** → GeoTIFF, resolution 90 m / 30 m / 10 m.  
-        3. **NDVI (Normalized Difference Vegetation Index)** → GeoTIFF, resolution 30 m or 10 m.  
-        - Values: -1 to +1 (will be normalized to 0–1).  
-        - Recommended: **Median NDVI during summer (June–Aug)** from Sentinel-2 SR.  
-        4. **Buildings** → GeoJSON or GPKG with footprint polygons (will be rasterized to 10 m).  
-
-        ⚠️ All datasets must cover the same area and use the same projection (CRS).  
-        The app will resample rasters to **10 m grid resolution**.
-
-        ---
-
-        ### 🌍 Where to Download Data
-        - **NDVI (Sentinel-2 SR)**  
-        Dataset: [COPERNICUS/S2_SR_HARMONIZED](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED)  
-        Example Google Earth Engine (GEE) code for Summer NDVI 2023:
-        ```javascript
-        var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
-            .filterBounds(aoi)
-            .filterDate("2023-06-01", "2023-08-31")
-            .map(function(img){return img.divide(10000)})
-            .map(function(img){return img.normalizedDifference(['B8','B4']).rename("NDVI")});
-        var ndvi = s2.median().clip(aoi);
-        Export.image.toDrive({image: ndvi, scale: 10, region: aoi, fileFormat: "GeoTIFF"});
-        ```
-
-        - **DEM (Copernicus GLO-30 DEM, 30 m)**  
-        Free global DEM dataset:  
-        [Copernicus DEM Download](https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model)  
-
-        - **Buildings (OpenStreetMap)**  
-        - Download regional extracts: [GeoFabrik OSM Data](https://download.geofabrik.de/)  
-        - Or query via Overpass API:
-            ```
-            [out:json];(way["building"](AREA););out body;>;out skel qt;
-            ```
-
-        ---
-
-        📌 **Tip:** If you’re unsure, start with a **pre-processed city**.  
-        If you want to try your own location, make sure your data meets the requirements.  
-        For full details, see the **Methodology & Technical Notes** at the bottom.
+        👉 If you’re new, start with a **pre-processed city**.  
+        Advanced users can upload or auto-download their own datasets.
         """)
     # -----------------------------
     # Option 1: Pre-processed Cities
