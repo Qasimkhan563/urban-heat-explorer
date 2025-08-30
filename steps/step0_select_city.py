@@ -140,17 +140,14 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
 
     if use_auto:
         city_query = st.text_input("Enter a city/district name (e.g., Podgorica, Montenegro)").strip()
-        if use_auto:
-            city_query = st.text_input("Enter a city/district name (e.g., Podgorica, Montenegro)").strip()
-            if st.button("🔎 Auto Process City"):
-                if city_query:
-                    try:
-                        # Make sure EE is initialized via service account
-                        from ee_auth import init_ee
-                        init_ee()
-        
-                        city_gdf = ox.geocode_to_gdf(city_query).to_crs(4326)
-
+        if st.button("🔎 Auto Process City"):
+            if city_query:
+                try:
+                    from ee_auth import init_ee
+                    init_ee()
+    
+                    city_gdf = ox.geocode_to_gdf(city_query).to_crs(4326)
+    
                     if city_gdf.empty:
                         st.error("❌ City not found. Try a different spelling or include country name.")
                     else:
@@ -160,18 +157,16 @@ def run_step(BASE_DIR, AVAILABLE_CITIES):
                         project = pyproj.Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True).transform
                         aoi_m = shp_transform(project, shape(aoi.getInfo()))
                         area_km2 = aoi_m.area / 1e6
-
-                        # Save state
+    
                         city_clean = city_query.replace(" ", "_")
                         st.session_state["auto_city"] = city_query
                         st.session_state["selected_cities"] = [city_clean]
-
+    
                         st.success(f"✅ City fetched: **{city_query}** ({area_km2:.1f} km²).")
-
-                        # Map preview
+    
                         centroid = city_gdf.geometry.iloc[0].centroid
                         st.info(f"Map preview skipped. AOI centroid at lat={centroid.y:.4f}, lon={centroid.x:.4f}")
-                        
+    
                 except Exception as e:
                     st.error(f"⚠️ Failed to fetch city: {e}")
             else:
