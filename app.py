@@ -15,8 +15,8 @@ from steps import (
     step5_results_export
 )
 
-BASE_DIR = r"C:\Users\hp\Downloads\app2"
-CITIES_FILE = os.path.join(BASE_DIR, "available_cities.json")
+BASE_DIR = os.path.join(os.path.dirname(__file__), "data", "cities")
+CITIES_FILE = os.path.join(os.path.dirname(__file__), "available_cities.json")
 
 # --- Initialize session state ---
 if "step" not in st.session_state:
