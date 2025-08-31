@@ -10,7 +10,6 @@ __pycache__/
 .ipynb_checkpoints/
 .streamlit/secrets.toml
 .streamlit/cache/
-.streamlit/
 
 # --- Virtual environments ---
 .venv/
